@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysBloodSugarMapper">
+
+    <resultMap type="com.ruoyi.common.core.domain.entity.SysBloodSugar" id="SysBloodSugarResult">
+        <result property="sugarId" column="sugar_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="sugarValue" column="sugar_value"/>
+        <result property="measureTime" column="measure_time"/>
+        <result property="mealType" column="meal_type"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectBloodSugarVo">
+        SELECT sugar_id, user_id, sugar_value, measure_time, meal_type, remark,
+               create_by, create_time, update_by, update_time
+        FROM sys_blood_sugar
+    </sql>
+
+    <select id="selectBloodSugarList" resultMap="SysBloodSugarResult">
+        <include refid="selectBloodSugarVo"/>
+        WHERE del_flag = '0'
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="sugarValue != null and sugarValue != ''">
+            AND sugar_value = #{sugarValue}
+        </if>
+        <if test="mealType != null and mealType != ''">
+            AND meal_type = #{mealType}
+        </if>
+        ORDER BY measure_time DESC
+    </select>
+
+    <select id="selectBloodSugarById" resultMap="SysBloodSugarResult">
+        <include refid="selectBloodSugarVo"/>
+        WHERE sugar_id = #{sugarId}
+    </select>
+
+    <insert id="insertBloodSugar" parameterType="com.ruoyi.common.core.domain.entity.SysBloodSugar" useGeneratedKeys="true" keyProperty="sugarId">
+        INSERT INTO sys_blood_sugar
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="sugarValue != null">sugar_value,</if>
+            <if test="measureTime != null">measure_time,</if>
+            <if test="mealType != null">meal_type,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="sugarValue != null">#{sugarValue},</if>
+            <if test="measureTime != null">#{measureTime},</if>
+            <if test="mealType != null">#{mealType},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBloodSugar" parameterType="com.ruoyi.common.core.domain.entity.SysBloodSugar">
+        UPDATE sys_blood_sugar
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sugarValue != null">sugar_value = #{sugarValue},</if>
+            <if test="measureTime != null">measure_time = #{measureTime},</if>
+            <if test="mealType != null">meal_type = #{mealType},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        WHERE sugar_id = #{sugarId}
+    </update>
+
+    <delete id="deleteBloodSugarById">
+        UPDATE sys_blood_sugar SET del_flag = '2' WHERE sugar_id = #{sugarId}
+    </delete>
+
+    <delete id="deleteBloodSugarByIds">
+        UPDATE sys_blood_sugar SET del_flag = '2' WHERE sugar_id IN
+        <foreach item="sugarId" collection="array" open="(" separator="," close=")">
+            #{sugarId}
+        </foreach>
+    </delete>
+
+    <select id="selectTodayStats" resultType="map">
+        SELECT
+            COUNT(*) as count,
+            ROUND(AVG(sugar_value), 2) as avgValue,
+            MAX(sugar_value) as maxValue,
+            MIN(sugar_value) as minValue
+        FROM sys_blood_sugar
+        WHERE user_id = #{userId}
+          AND DATE(measure_time) = CURDATE()
+          AND del_flag = '0'
+    </select>
+
+    <select id="selectSevenDaysTrend" resultType="map">
+        SELECT DATE(measure_time) as date, ROUND(AVG(sugar_value), 2) as avgValue
+        FROM sys_blood_sugar
+        WHERE user_id = #{userId}
+          AND measure_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+          AND del_flag = '0'
+        GROUP BY DATE(measure_time)
+        ORDER BY date ASC
+    </select>
+
+</mapper>
