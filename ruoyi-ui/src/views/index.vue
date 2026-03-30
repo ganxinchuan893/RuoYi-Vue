@@ -5,19 +5,19 @@
       <el-col :span="8">
         <div class="stat-card stat-avg">
           <div class="stat-label">今日平均</div>
-          <div class="stat-value">{{ stats.avgValue || '--' }} <span class="stat-unit">mmol/L</span></div>
+          <div class="stat-value">{{ stats.avgSugar || '--' }} <span class="stat-unit">mmol/L</span></div>
         </div>
       </el-col>
       <el-col :span="8">
         <div class="stat-card stat-max">
           <div class="stat-label">今日最高</div>
-          <div class="stat-value">{{ stats.maxValue || '--' }} <span class="stat-unit">mmol/L</span></div>
+          <div class="stat-value">{{ stats.maxSugar || '--' }} <span class="stat-unit">mmol/L</span></div>
         </div>
       </el-col>
       <el-col :span="8">
         <div class="stat-card stat-min">
           <div class="stat-label">今日最低</div>
-          <div class="stat-value">{{ stats.minValue || '--' }} <span class="stat-unit">mmol/L</span></div>
+          <div class="stat-value">{{ stats.minSugar || '--' }} <span class="stat-unit">mmol/L</span></div>
         </div>
       </el-col>
     </el-row>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { listBloodSugar, getBloodSugar, addBloodSugar, updateBloodSugar, delBloodSugar, getTodayStats, getSevenDaysTrend } from '@/api/bloodSugar'
+import { listBloodSugar, getBloodSugar, addBloodSugar, updateBloodSugar, delBloodSugar, getTodayStats, getSevenDaysTrend } from '@/api/system/bloodSugar'
 
 export default {
   name: 'Index',
@@ -164,10 +164,10 @@ export default {
         const weekChart = echarts.init(this.$refs.weekChart)
         weekChart.setOption({
           tooltip: { trigger: 'axis' },
-          xAxis: { type: 'category', data: this.weekData.map(d => d.date) },
+          xAxis: { type: 'category', data: this.weekData.map(d => d.measureDate) },
           yAxis: { type: 'value', name: 'mmol/L' },
           series: [{
-            data: this.weekData.map(d => d.avgValue),
+            data: this.weekData.map(d => d.avgSugar),
             type: 'bar',
             itemStyle: { color: '#67C23A' }
           }]

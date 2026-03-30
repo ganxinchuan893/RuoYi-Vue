@@ -1,6 +1,5 @@
 package com.ruoyi.system.mapper;
 
-import com.ruoyi.common.core.mapper.BaseMapper;
 import com.ruoyi.system.domain.SysBloodSugar;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +9,7 @@ import java.util.Map;
 /**
  * 血糖记录Mapper接口
  */
-public interface SysBloodSugarMapper extends BaseMapper<SysBloodSugar> {
+public interface SysBloodSugarMapper {
 
     /**
      * 查询血糖记录列表

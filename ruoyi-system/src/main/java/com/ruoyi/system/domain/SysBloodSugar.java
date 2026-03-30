@@ -1,4 +1,4 @@
-package com.ruoyi.common.core.domain.entity;
+package com.ruoyi.system.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;

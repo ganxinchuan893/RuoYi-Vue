@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.SysBloodSugarMapper">
 
-    <resultMap type="com.ruoyi.common.core.domain.entity.SysBloodSugar" id="SysBloodSugarResult">
+    <resultMap type="com.ruoyi.system.domain.SysBloodSugar" id="SysBloodSugarResult">
         <result property="sugarId" column="sugar_id"/>
         <result property="userId" column="user_id"/>
         <result property="sugarValue" column="sugar_value"/>
@@ -41,7 +41,7 @@
         WHERE sugar_id = #{sugarId}
     </select>
 
-    <insert id="insertBloodSugar" parameterType="com.ruoyi.common.core.domain.entity.SysBloodSugar" useGeneratedKeys="true" keyProperty="sugarId">
+    <insert id="insertBloodSugar" parameterType="com.ruoyi.system.domain.SysBloodSugar" useGeneratedKeys="true" keyProperty="sugarId">
         INSERT INTO sys_blood_sugar
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">user_id,</if>
@@ -63,7 +63,7 @@
         </trim>
     </insert>
 
-    <update id="updateBloodSugar" parameterType="com.ruoyi.common.core.domain.entity.SysBloodSugar">
+    <update id="updateBloodSugar" parameterType="com.ruoyi.system.domain.SysBloodSugar">
         UPDATE sys_blood_sugar
         <trim prefix="SET" suffixOverrides=",">
             <if test="sugarValue != null">sugar_value = #{sugarValue},</if>
@@ -89,10 +89,10 @@
 
     <select id="selectTodayStats" resultType="map">
         SELECT
-            COUNT(*) as count,
-            ROUND(AVG(sugar_value), 2) as avgValue,
-            MAX(sugar_value) as maxValue,
-            MIN(sugar_value) as minValue
+            COUNT(*) as totalCount,
+            ROUND(AVG(sugar_value), 2) as avgSugar,
+            MAX(sugar_value) as maxSugar,
+            MIN(sugar_value) as minSugar
         FROM sys_blood_sugar
         WHERE user_id = #{userId}
           AND DATE(measure_time) = CURDATE()
@@ -100,13 +100,13 @@
     </select>
 
     <select id="selectSevenDaysTrend" resultType="map">
-        SELECT DATE(measure_time) as date, ROUND(AVG(sugar_value), 2) as avgValue
+        SELECT DATE(measure_time) as measureDate, ROUND(AVG(sugar_value), 2) as avgSugar
         FROM sys_blood_sugar
         WHERE user_id = #{userId}
           AND measure_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
           AND del_flag = '0'
         GROUP BY DATE(measure_time)
-        ORDER BY date ASC
+        ORDER BY measureDate ASC
     </select>
 
 </mapper>
